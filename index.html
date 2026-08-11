@@ -213,6 +213,57 @@
             color: #777;
         }
 
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal-overlay.ativo {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 12px;
+            padding: 36px 32px 28px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-icone {
+            font-size: 54px;
+            line-height: 1;
+            margin-bottom: 14px;
+        }
+
+        .modal-titulo {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1b8a8a;
+            margin-bottom: 10px;
+        }
+
+        .modal-texto {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .modal-box button {
+            background: linear-gradient(135deg, #1b8a8a 0%, #0f5a5a 100%);
+            color: white;
+            min-width: 140px;
+        }
+
         .info-box {
             background: #f8f9fa;
             border-left: 4px solid #1b8a8a;
@@ -357,6 +408,15 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="modalSucesso" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+        <div class="modal-box">
+            <div class="modal-icone">✅</div>
+            <div class="modal-titulo" id="modalTitulo">Formulário enviado com sucesso.</div>
+            <p class="modal-texto">Os dados foram enviados para cadastro@venturainvest.com.br.</p>
+            <button type="button" id="modalOk">OK</button>
+        </div>
+    </div>
+
     <script>
         // Formatar Moeda Brasileira
         function formatarMoeda(event) {
@@ -451,6 +511,36 @@
             }
         });
 
+        // O aviso fica no topo da pagina e o botao Enviar fica no fim: sem rolar, ninguem ve.
+        function mostrarErro(texto) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = texto;
+            el.style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Popup de confirmacao
+        const modal = document.getElementById('modalSucesso');
+        const modalOk = document.getElementById('modalOk');
+        const btnEnviar = document.querySelector('.btn-submit');
+
+        function abrirModal() {
+            modal.classList.add('ativo');
+            modalOk.focus();
+        }
+
+        function fecharModal() {
+            modal.classList.remove('ativo');
+            form.reset();
+        }
+
+        modalOk.addEventListener('click', fecharModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) fecharModal(); });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('ativo')) fecharModal();
+        });
+
         // Submeter formulário
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -464,31 +554,27 @@
 
             // Validar modalidade
             if (modalidades.length === 0) {
-                document.getElementById('errorMsg').textContent = '❌ Selecione ao menos uma modalidade de recebíveis!';
-                document.getElementById('errorMsg').style.display = 'block';
-                document.getElementById('successMsg').style.display = 'none';
+                mostrarErro('❌ Selecione ao menos uma modalidade de recebíveis!');
                 return;
             }
 
             // Validar CNPJ
             if (!validarCNPJ(dados.cnpj)) {
-                document.getElementById('errorMsg').textContent = '❌ CNPJ inválido!';
-                document.getElementById('errorMsg').style.display = 'block';
-                document.getElementById('successMsg').style.display = 'none';
+                mostrarErro('❌ CNPJ inválido!');
                 return;
             }
 
             // Validar observações
             if (dados.observacoes.length < 10) {
-                document.getElementById('errorMsg').textContent = '❌ Observações devem ter no mínimo 10 caracteres!';
-                document.getElementById('errorMsg').style.display = 'block';
-                document.getElementById('successMsg').style.display = 'none';
+                mostrarErro('❌ Observações devem ter no mínimo 10 caracteres!');
                 return;
             }
 
-            // Mostrar mensagem de envio
-            document.getElementById('successMsg').textContent = '⏳ Enviando formulário...';
-            document.getElementById('successMsg').style.display = 'block';
+            // Estado de envio no proprio botao: fica visivel onde a pessoa esta e bloqueia clique duplo
+            const textoBotao = btnEnviar.textContent;
+            btnEnviar.disabled = true;
+            btnEnviar.textContent = '⏳ Enviando...';
+            document.getElementById('successMsg').style.display = 'none';
             document.getElementById('errorMsg').style.display = 'none';
 
             try {
@@ -508,31 +594,24 @@
                     localStorage.setItem('ultimaSubmissao', JSON.stringify(dados));
                     localStorage.setItem('dataSubmissao', new Date().toLocaleString('pt-BR'));
 
-                    // Exibir sucesso
-                    document.getElementById('successMsg').textContent = '✅ ' + result.message;
-                    document.getElementById('successMsg').style.display = 'block';
-                    document.getElementById('errorMsg').style.display = 'none';
-
                     // Limpar rascunho salvo para não reaparecer no próximo acesso
                     campos.forEach(campo => localStorage.removeItem(campo.id));
                     localStorage.removeItem('grupo_modalidade');
 
-                    // Limpar formulário após 3 segundos
-                    setTimeout(() => {
-                        form.reset();
-                        document.getElementById('successMsg').style.display = 'none';
-                    }, 3000);
+                    // Confirmacao no centro da tela
+                    document.getElementById('successMsg').style.display = 'none';
+                    document.getElementById('errorMsg').style.display = 'none';
+                    abrirModal();
 
                 } else {
-                    document.getElementById('errorMsg').textContent = '❌ ' + (result.message || 'Erro ao enviar formulário');
-                    document.getElementById('errorMsg').style.display = 'block';
-                    document.getElementById('successMsg').style.display = 'none';
+                    mostrarErro('❌ ' + (result.message || 'Erro ao enviar formulário'));
                 }
             } catch (error) {
                 console.error('Erro:', error);
-                document.getElementById('errorMsg').textContent = '❌ Erro de conexão. Tente novamente.';
-                document.getElementById('errorMsg').style.display = 'block';
-                document.getElementById('successMsg').style.display = 'none';
+                mostrarErro('❌ Erro de conexão. Tente novamente.');
+            } finally {
+                btnEnviar.disabled = false;
+                btnEnviar.textContent = textoBotao;
             }
         });
     </script>

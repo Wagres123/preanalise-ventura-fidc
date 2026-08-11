@@ -286,13 +286,6 @@
                             <input type="text" id="volume" name="volume" required placeholder="R$ 0,00">
                         </div>
                     </div>
-
-                    <div class="form-row full">
-                        <div class="form-group">
-                            <label for="volumeRecebiveis">Volume de Recebíveis Pretendido *</label>
-                            <input type="text" id="volumeRecebiveis" name="volumeRecebiveis" required placeholder="R$ 0,00">
-                        </div>
-                    </div>
                 </div>
 
                 <!-- SEÇÃO 3: CARACTERÍSTICAS DA OPERAÇÃO -->
@@ -422,7 +415,6 @@
         // Adicionar listeners
         document.getElementById('faturamento').addEventListener('blur', formatarMoeda);
         document.getElementById('volume').addEventListener('blur', formatarMoeda);
-        document.getElementById('volumeRecebiveis').addEventListener('blur', formatarMoeda);
         document.getElementById('cnpj').addEventListener('input', formatarCNPJ);
 
         // Salvar no localStorage

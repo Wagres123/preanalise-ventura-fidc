@@ -171,6 +171,48 @@
             }
         }
 
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+            gap: 8px;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: #fafafa;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-weight: 500;
+            margin: 0;
+            padding: 8px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: #eaf5f5;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #1b8a8a;
+            cursor: pointer;
+            padding: 0;
+            border: none;
+            flex-shrink: 0;
+        }
+
+        .hint {
+            font-weight: 400;
+            font-size: 13px;
+            color: #777;
+        }
+
         .info-box {
             background: #f8f9fa;
             border-left: 4px solid #1b8a8a;
@@ -202,7 +244,9 @@
                 ❌ Erro ao processar o formulário. Verifique os dados e tente novamente.
             </div>
 
-            
+            <div class="info-box">
+                <p><strong>ℹ️ Informações:</strong> Os dados do formulário são salvos localmente no seu navegador e podem ser exportados.</p>
+            </div>
 
             <form id="formAnalise">
                 <!-- SEÇÃO 1: INFORMAÇÕES BÁSICAS -->
@@ -280,17 +324,16 @@
 
                     <div class="form-row full">
                         <div class="form-group">
-                            <label for="modalidade">Modalidade de Recebíveis *</label>
-                            <select id="modalidade" name="modalidade" required>
-                                <option value="">Selecione uma opção</option>
-                                <option value="Boleto">Boleto</option>
-                                <option value="Cheque">Cheque</option>
-                                <option value="Contratos">Contratos</option>
-                                <option value="Comissária">Comissária</option>
-                                <option value="Nota Comercial">Nota Comercial</option>
-                                <option value="CCB">CCB</option>
-                                <option value="Com Garantias">Com Garantias</option>
-                            </select>
+                            <label>Modalidade de Recebíveis * <span class="hint">(pode marcar mais de uma)</span></label>
+                            <div class="checkbox-group" id="modalidadeGrupo">
+                                <label class="checkbox-item"><input type="checkbox" name="modalidade" value="Boleto"> Boleto</label>
+                                <label class="checkbox-item"><input type="checkbox" name="modalidade" value="Cheque"> Cheque</label>
+                                <label class="checkbox-item"><input type="checkbox" name="modalidade" value="Contratos"> Contratos</label>
+                                <label class="checkbox-item"><input type="checkbox" name="modalidade" value="Comissária"> Comissária</label>
+                                <label class="checkbox-item"><input type="checkbox" name="modalidade" value="Nota Comercial"> Nota Comercial</label>
+                                <label class="checkbox-item"><input type="checkbox" name="modalidade" value="CCB"> CCB</label>
+                                <label class="checkbox-item"><input type="checkbox" name="modalidade" value="Com Garantias"> Com Garantias</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -314,7 +357,10 @@
                 </div>
             </form>
 
-            
+            <div class="info-box" style="margin-top: 30px;">
+                <p><strong>📝 Nota:</strong> Este formulário salva seus dados localmente no navegador. Para enviar para o servidor, integre com um backend Node.js/Express.</p>
+                <p style="margin-top: 10px;"><strong>GitHub:</strong> <a href="https://github.com/Wagres123/preanalise-ventura-fidc" style="color: #1b8a8a; text-decoration: none;">Acesse o repositório do projeto</a></p>
+            </div>
         </div>
     </div>
 
@@ -385,16 +431,32 @@
 
         campos.forEach(campo => {
             campo.addEventListener('change', () => {
-                localStorage.setItem(campo.id, campo.value);
+                if (campo.type === 'checkbox') {
+                    const marcados = Array.from(form.querySelectorAll('input[name="' + campo.name + '"]:checked')).map(c => c.value);
+                    localStorage.setItem('grupo_' + campo.name, JSON.stringify(marcados));
+                } else {
+                    localStorage.setItem(campo.id, campo.value);
+                }
             });
         });
 
         // Restaurar do localStorage
         window.addEventListener('load', () => {
             campos.forEach(campo => {
+                if (campo.type === 'checkbox') return;
                 const valor = localStorage.getItem(campo.id);
                 if (valor) campo.value = valor;
             });
+
+            const modalidadesSalvas = localStorage.getItem('grupo_modalidade');
+            if (modalidadesSalvas) {
+                try {
+                    const lista = JSON.parse(modalidadesSalvas);
+                    form.querySelectorAll('input[name="modalidade"]').forEach(c => {
+                        c.checked = lista.indexOf(c.value) !== -1;
+                    });
+                } catch (e) { /* rascunho invalido, ignora */ }
+            }
         });
 
         // Submeter formulário
@@ -403,6 +465,18 @@
 
             const formData = new FormData(form);
             const dados = Object.fromEntries(formData);
+
+            // Modalidades: varias podem estar marcadas, entao getAll (Object.fromEntries so guarda a ultima)
+            const modalidades = formData.getAll('modalidade');
+            dados.modalidade = modalidades.join(', ');
+
+            // Validar modalidade
+            if (modalidades.length === 0) {
+                document.getElementById('errorMsg').textContent = '❌ Selecione ao menos uma modalidade de recebíveis!';
+                document.getElementById('errorMsg').style.display = 'block';
+                document.getElementById('successMsg').style.display = 'none';
+                return;
+            }
 
             // Validar CNPJ
             if (!validarCNPJ(dados.cnpj)) {
@@ -449,6 +523,7 @@
 
                     // Limpar rascunho salvo para não reaparecer no próximo acesso
                     campos.forEach(campo => localStorage.removeItem(campo.id));
+                    localStorage.removeItem('grupo_modalidade');
 
                     // Limpar formulário após 3 segundos
                     setTimeout(() => {

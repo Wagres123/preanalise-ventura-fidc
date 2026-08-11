@@ -436,21 +436,53 @@
                 return;
             }
 
-            // Salvar no localStorage
-            localStorage.setItem('ultimaSubmissao', JSON.stringify(dados));
-            localStorage.setItem('dataSubmissao', new Date().toLocaleString('pt-BR'));
-
-            // Exibir sucesso
+            // Mostrar mensagem de envio
+            document.getElementById('successMsg').textContent = '⏳ Enviando formulário...';
             document.getElementById('successMsg').style.display = 'block';
             document.getElementById('errorMsg').style.display = 'none';
 
-            // Log dos dados
-            console.log('Formulário enviado:', dados);
+            try {
+                // Enviar para o backend
+                const response = await fetch('/api/enviar-preanalise', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dados)
+                });
 
-            // Limpar após 3 segundos
-            setTimeout(() => {
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    // Salvar no localStorage
+                    localStorage.setItem('ultimaSubmissao', JSON.stringify(dados));
+                    localStorage.setItem('dataSubmissao', new Date().toLocaleString('pt-BR'));
+
+                    // Exibir sucesso
+                    document.getElementById('successMsg').textContent = '✅ ' + result.message;
+                    document.getElementById('successMsg').style.display = 'block';
+                    document.getElementById('errorMsg').style.display = 'none';
+
+                    // Limpar rascunho salvo para não reaparecer no próximo acesso
+                    campos.forEach(campo => localStorage.removeItem(campo.id));
+
+                    // Limpar formulário após 3 segundos
+                    setTimeout(() => {
+                        form.reset();
+                        document.getElementById('successMsg').style.display = 'none';
+                    }, 3000);
+
+                } else {
+                    document.getElementById('errorMsg').textContent = '❌ ' + (result.message || 'Erro ao enviar formulário');
+                    document.getElementById('errorMsg').style.display = 'block';
+                    document.getElementById('successMsg').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('errorMsg').textContent = '❌ Erro de conexão. Tente novamente.';
+                document.getElementById('errorMsg').style.display = 'block';
                 document.getElementById('successMsg').style.display = 'none';
-            }, 3000);
+            }
         });
     </script>
 </body>

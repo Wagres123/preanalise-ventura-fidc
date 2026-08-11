@@ -1,0 +1,9 @@
+{
+  "name": "formulario-preanalise-ventura",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Formulario de Pre-Analise Comercial Ventura FIDC",
+  "dependencies": {
+    "nodemailer": "^6.9.14"
+  }
+}

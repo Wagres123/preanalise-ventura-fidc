@@ -328,10 +328,14 @@
                         </div>
                     </div>
 
-                    <div class="form-row full">
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="cnpj">CNPJ *</label>
                             <input type="text" id="cnpj" name="cnpj" required placeholder="Ex: 12.345.678/0001-99" maxlength="18">
+                        </div>
+                        <div class="form-group">
+                            <label for="razaoSocial">Razão Social *</label>
+                            <input type="text" id="razaoSocial" name="razaoSocial" required placeholder="Ex: Empresa Exemplo Ltda" autocomplete="organization">
                         </div>
                     </div>
                 </div>
@@ -574,6 +578,13 @@
             // Validar CNPJ
             if (!validarCNPJ(dados.cnpj)) {
                 mostrarErro('❌ CNPJ inválido!');
+                return;
+            }
+
+            // Validar razao social (required do HTML aceita so espacos em branco)
+            dados.razaoSocial = (dados.razaoSocial || '').trim();
+            if (dados.razaoSocial.length < 3) {
+                mostrarErro('❌ Informe a Razão Social (mínimo 3 caracteres)!');
                 return;
             }
 

@@ -31,7 +31,8 @@ module.exports = async function handler(req, res) {
         conteudo += 'INFORMAÇÕES BÁSICAS\n' + sub + '\n';
         conteudo += 'Origem da Indicação: ' + (dados.origem || 'N/A') + '\n';
         conteudo += 'Tempo de Relacionamento: ' + (dados.relacionamento || 'N/A') + ' meses\n';
-        conteudo += 'CNPJ: ' + (dados.cnpj || 'N/A') + '\n\n';
+        conteudo += 'CNPJ: ' + (dados.cnpj || 'N/A') + '\n';
+        conteudo += 'Razão Social: ' + (dados.razaoSocial || 'N/A') + '\n\n';
 
         conteudo += 'DADOS FINANCEIROS\n' + sub + '\n';
         conteudo += 'Faturamento Médio Mensal: ' + (dados.faturamento || 'N/A') + '\n';
@@ -69,7 +70,7 @@ module.exports = async function handler(req, res) {
             from: process.env.SMTP_FROM || process.env.SMTP_USER,
             to: 'cadastro@venturainvest.com.br',
             replyTo: process.env.SMTP_USER,
-            subject: 'Pré-Análise Comercial - ' + dados.cnpj,
+            subject: 'Pré-Análise Comercial - ' + (dados.razaoSocial ? dados.razaoSocial + ' (' + dados.cnpj + ')' : dados.cnpj),
             text: conteudo,
             html: '<pre style="font-family:monospace;font-size:13px">' + escapeHtml(conteudo) + '</pre>'
         });

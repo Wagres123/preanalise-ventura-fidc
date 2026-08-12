@@ -157,6 +157,13 @@
             display: none;
         }
 
+        .header .logo {
+            display: block;
+            height: 62px;
+            width: auto;
+            margin: 0 auto 22px;
+        }
+
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -168,6 +175,11 @@
 
             .header h1 {
                 font-size: 24px;
+            }
+
+            .header .logo {
+                height: 46px;
+                margin-bottom: 18px;
             }
         }
 
@@ -282,8 +294,9 @@
 <body>
     <div class="container">
         <div class="header">
+            <img class="logo" src="https://venturainvest.com.br/wp-content/uploads/2023/01/Ventura_Invest_horizontal_branca.png" alt="Ventura Invest">
             <h1>📋 Pré-Análise Comercial</h1>
-            <p>Ventura FIDC</p>
+            <p>FIDC Invest</p>
         </div>
 
         <div class="form-container">

@@ -35,7 +35,7 @@ module.exports = async function handler(req, res) {
         conteudo += 'Razão Social: ' + (dados.razaoSocial || 'N/A') + '\n\n';
 
         conteudo += 'DADOS FINANCEIROS\n' + sub + '\n';
-        conteudo += 'Faturamento Médio Mensal: ' + (dados.faturamento || 'N/A') + '\n';
+        conteudo += 'Faturamento Médio Mensal Contábil: ' + (dados.faturamento || 'N/A') + '\n';
         conteudo += 'Volume Pretendido/Operado: ' + (dados.volume || 'N/A') + '\n\n';
 
         conteudo += 'CARACTERÍSTICAS DA OPERAÇÃO\n' + sub + '\n';

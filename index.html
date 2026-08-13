@@ -611,14 +611,39 @@
 
     <script>
         // Formatar Moeda Brasileira
+        // Formata em reais a cada digito. Cada digito e um real inteiro; os centavos
+        // ficam fixos em ",00" para o usuario nao precisar contar zeros.
         function formatarMoeda(event) {
-            let input = event.target;
-            let valor = input.value.replace(/\D/g, '');
-            let numero = parseInt(valor) || 0;
-            input.value = 'R$ ' + (numero / 100).toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
+            const input = event.target;
+            // remove o ",00" que esta funcao mesma escreveu, senao os centavos
+            // voltam como digitos novos e o valor multiplica por 100 a cada tecla
+            const semCentavos = input.value.replace(/,\d{0,2}\s*$/, '');
+            const digitos = semCentavos.replace(/\D/g, '').replace(/^0+/, '');
+
+            if (!digitos) {
+                input.value = '';
+                return;
+            }
+
+            // quantos digitos havia depois do cursor: usado para recolocar o cursor
+            const digitosDepoisDoCursor = semCentavos
+                .slice(input.selectionEnd)
+                .replace(/\D/g, '').length;
+
+            const inteiro = parseInt(digitos, 10);
+            input.value = 'R$ ' + inteiro.toLocaleString('pt-BR') + ',00';
+
+            // reposiciona o cursor contando digitos do fim para tras, ignorando o ",00"
+            const fimDosInteiros = input.value.length - 3;
+            let pos = fimDosInteiros;
+            let restantes = digitosDepoisDoCursor;
+            while (pos > 0 && restantes > 0) {
+                pos--;
+                if (/\d/.test(input.value[pos])) restantes--;
+            }
+            // se o cursor parou sobre um separador de milhar, passa para depois dele
+            if (pos > 0 && pos < fimDosInteiros && !/\d/.test(input.value[pos])) pos++;
+            if (input.setSelectionRange) input.setSelectionRange(pos, pos);
         }
 
         // Formatar CNPJ
@@ -665,8 +690,8 @@
         }
 
         // Adicionar listeners
-        document.getElementById('faturamento').addEventListener('blur', formatarMoeda);
-        document.getElementById('volume').addEventListener('blur', formatarMoeda);
+        document.getElementById('faturamento').addEventListener('input', formatarMoeda);
+        document.getElementById('volume').addEventListener('input', formatarMoeda);
         document.getElementById('cnpj').addEventListener('input', formatarCNPJ);
 
         // Salvar no localStorage

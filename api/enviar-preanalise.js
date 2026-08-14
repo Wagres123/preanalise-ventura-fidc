@@ -41,7 +41,9 @@ module.exports = async function handler(req, res) {
         conteudo += 'CARACTERÍSTICAS DA OPERAÇÃO\n' + sub + '\n';
         conteudo += 'Prazo de Entrega: ' + (dados.prazo || 'N/A') + '\n';
         conteudo += '% de Mercadoria Performada: ' + (dados.performada || '0') + '%\n';
-        conteudo += 'Modalidade de Recebíveis: ' + (dados.modalidade || 'N/A') + '\n\n';
+        conteudo += 'Modalidade de Recebíveis: ' + (dados.modalidade || 'N/A') + '\n';
+        conteudo += 'Recorrência de Operação: ' + (dados.recorrencia || 'N/A') + '\n';
+        conteudo += 'Operações no Período: ' + (dados.frequencia || 'N/A') + '\n\n';
 
         conteudo += 'INFORMAÇÕES COMPLEMENTARES\n' + sub + '\n';
         conteudo += 'Observações: ' + (dados.observacoes || 'N/A') + '\n\n';

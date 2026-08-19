@@ -114,29 +114,7 @@
 
         /* ---------- corpo ---------- */
         .form-container {
-            padding: 0 34px 34px;
-        }
-
-        .aviso {
-            display: flex;
-            gap: 11px;
-            align-items: flex-start;
-            background: #f5f8fb;
-            border: 1px solid var(--borda);
-            border-radius: 10px;
-            padding: 13px 15px;
-            margin-bottom: 30px;
-            font-size: 13.5px;
-            color: #4b5563;
-            line-height: 1.5;
-        }
-
-        .aviso svg {
-            width: 17px;
-            height: 17px;
-            color: var(--teal);
-            flex-shrink: 0;
-            margin-top: 1px;
+            padding: 24px 34px 34px;
         }
 
         .form-section { margin-bottom: 30px; }
@@ -293,6 +271,104 @@
             box-shadow: none;
         }
 
+        /* ---------- anexos ---------- */
+        .anexo-area {
+            border: 1.5px dashed var(--borda);
+            border-radius: 10px;
+            background: #fbfcfd;
+            padding: 20px;
+            text-align: center;
+            transition: border-color .2s, background .2s;
+        }
+
+        .anexo-area.arrastando {
+            border-color: var(--teal);
+            background: var(--teal-soft);
+        }
+
+        .anexo-botao {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 1.5px solid var(--teal);
+            border-radius: 9px;
+            background: #fff;
+            color: var(--teal);
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .anexo-botao:hover { background: var(--teal-soft); }
+        .anexo-botao svg { width: 16px; height: 16px; }
+
+        .anexo-dica {
+            margin-top: 10px;
+            font-size: 12.5px;
+            color: #9aa3af;
+            line-height: 1.5;
+        }
+
+        #anexoInput { display: none; }
+
+        .anexo-lista {
+            list-style: none;
+            margin-top: 14px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .anexo-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid var(--borda);
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .anexo-item svg { width: 16px; height: 16px; color: var(--teal); flex-shrink: 0; }
+        .anexo-nome { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .anexo-tam { color: var(--muted); font-size: 12px; flex-shrink: 0; }
+
+        .anexo-remover {
+            background: none;
+            border: none;
+            padding: 4px;
+            cursor: pointer;
+            color: #9aa3af;
+            display: flex;
+            flex-shrink: 0;
+        }
+
+        .anexo-remover:hover { color: #d94a4a; }
+        .anexo-remover svg { width: 15px; height: 15px; color: inherit; }
+
+        .anexo-total {
+            margin-top: 10px;
+            font-size: 12.5px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .anexo-total.estourou { color: #d94a4a; font-weight: 600; }
+        .anexo-aviso {
+            display: none;
+            margin: 8px 0 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #fdecec;
+            border: 1px solid #f5c2c2;
+            color: #a83232;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
         /* ---------- mensagens ---------- */
         .success-message, .error-message {
             border-radius: 10px;
@@ -436,7 +512,6 @@
 <body>
     <svg style="display:none" aria-hidden="true">
         <symbol id="i-clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></symbol>
-        <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></symbol>
         <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
         <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
         <symbol id="i-id" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M14 10h4M14 14h4M5 16c.7-1.4 2-2 3-2s2.3.6 3 2"/></symbol>
@@ -449,6 +524,10 @@
         <symbol id="i-repeat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></symbol>
         <symbol id="i-hash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16M4 15h16M10 3L8 21M16 3l-2 18"/></symbol>
         <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.5 9.5 0 0 1-3.3-.6L3 21l1.8-4.9A8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4z"/></symbol>
+        <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></symbol>
+        <symbol id="i-clip2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.4 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.2-9.19a4 4 0 0 1 5.65 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></symbol>
+        <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol>
+        <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></symbol>
         <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L3 10.5l6.5 2.8L12.5 20 21 3z"/><path d="M9.5 13.3L21 3"/></symbol>
         <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></symbol>
         <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></symbol>
@@ -471,11 +550,6 @@
             <div class="success-message" id="successMsg"></div>
             <div class="error-message" id="errorMsg"></div>
 
-            <div class="aviso">
-                <svg><use href="#i-info"/></svg>
-                <span><strong>Informações:</strong> Campos marcados com <span class="req">*</span> são obrigatórios. Ao enviar, os dados seguem para a equipe comercial da Ventura Invest.</span>
-            </div>
-
             <form id="formAnalise">
                 <!-- SEÇÃO 1: INFORMAÇÕES BÁSICAS -->
                 <div class="form-section">
@@ -483,11 +557,20 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="origem">Origem da Indicação <span class="req">*</span></label>
+                            <label for="origem">Responsável pela indicação <span class="req">*</span></label>
                             <div class="campo"><svg><use href="#i-user"/></svg>
-                                <input type="text" id="origem" name="origem" required placeholder="Ex: LinkedIn, Indicação Direta, etc.">
+                                <input type="text" id="origem" name="origem" required placeholder="Ex: João da Silva">
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="emailResponsavel">Email do responsável <span class="req">*</span></label>
+                            <div class="campo"><svg><use href="#i-mail"/></svg>
+                                <input type="email" id="emailResponsavel" name="emailResponsavel" required placeholder="Ex: joao@empresa.com.br" autocomplete="email">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="relacionamento">Tempo de Relacionamento (meses) <span class="req">*</span></label>
                             <div class="campo"><svg><use href="#i-cal"/></svg>
@@ -610,6 +693,22 @@
                             <label for="observacoes">Observações <span class="req">*</span></label>
                             <div class="campo area"><svg><use href="#i-chat"/></svg>
                                 <textarea id="observacoes" name="observacoes" required placeholder="Digite suas observações aqui (mínimo 10 caracteres)"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label>Documentos <span class="hint">(opcional)</span></label>
+                            <div class="anexo-area" id="anexoArea">
+                                <button type="button" class="anexo-botao" id="anexoBotao">
+                                    <svg><use href="#i-clip2"/></svg> Anexar documentos
+                                </button>
+                                <input type="file" id="anexoInput" multiple accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.docx,.doc">
+                                <p class="anexo-dica">Arraste os arquivos aqui ou clique no botão.<br>PDF, JPG, PNG, Excel ou Word — até 3 MB no total.</p>
+                                <ul class="anexo-lista" id="anexoLista"></ul>
+                                <p class="anexo-total" id="anexoTotal"></p>
+                                <p class="anexo-aviso" id="anexoAviso" role="alert"></p>
                             </div>
                         </div>
                     </div>
@@ -740,6 +839,153 @@
         // a chamada inicial fica no fim da restauracao do rascunho, mais abaixo:
         // aqui o valor ainda nao foi restaurado e o rotulo sairia generico
 
+        // ---------- Anexos ----------
+        // Vercel corta requisicoes acima de ~4.5 MB e base64 infla o arquivo em 1/3,
+        // por isso o limite pratico do total e 3 MB.
+        const LIMITE_ANEXOS = 3 * 1024 * 1024;
+        const anexoArea = document.getElementById('anexoArea');
+        const anexoBotao = document.getElementById('anexoBotao');
+        const anexoInput = document.getElementById('anexoInput');
+        const anexoLista = document.getElementById('anexoLista');
+        const anexoTotal = document.getElementById('anexoTotal');
+        const anexoAviso = document.getElementById('anexoAviso');
+        let arquivos = [];
+
+        function formatarTamanho(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function totalAnexos() {
+            return arquivos.reduce((soma, f) => soma + f.size, 0);
+        }
+
+        function renderizarAnexos() {
+            anexoLista.innerHTML = '';
+            arquivos.forEach((arquivo, indice) => {
+                const item = document.createElement('li');
+                item.className = 'anexo-item';
+
+                const icone = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                const uso = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                uso.setAttribute('href', '#i-file');
+                icone.appendChild(uso);
+                item.appendChild(icone);
+
+                const nome = document.createElement('span');
+                nome.className = 'anexo-nome';
+                nome.textContent = arquivo.name; // textContent: nome de arquivo nao vira HTML
+                nome.title = arquivo.name;
+                item.appendChild(nome);
+
+                const tam = document.createElement('span');
+                tam.className = 'anexo-tam';
+                tam.textContent = formatarTamanho(arquivo.size);
+                item.appendChild(tam);
+
+                const remover = document.createElement('button');
+                remover.type = 'button'; // sem isso o botao submete o formulario
+                remover.className = 'anexo-remover';
+                remover.setAttribute('aria-label', 'Remover ' + arquivo.name);
+                const iconeX = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                const usoX = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                usoX.setAttribute('href', '#i-x');
+                iconeX.appendChild(usoX);
+                remover.appendChild(iconeX);
+                remover.addEventListener('click', () => {
+                    arquivos.splice(indice, 1);
+                    renderizarAnexos();
+                });
+                item.appendChild(remover);
+
+                anexoLista.appendChild(item);
+            });
+
+            const total = totalAnexos();
+            if (arquivos.length === 0) {
+                anexoTotal.textContent = '';
+                anexoTotal.classList.remove('estourou');
+                return;
+            }
+            const plural = arquivos.length === 1 ? 'arquivo' : 'arquivos';
+            anexoTotal.textContent = arquivos.length + ' ' + plural + ' — ' +
+                formatarTamanho(total) + ' de 3 MB';
+            anexoTotal.classList.toggle('estourou', total > LIMITE_ANEXOS);
+        }
+
+        function adicionarArquivos(novos) {
+            const recusados = [];
+            Array.from(novos).forEach(arquivo => {
+                // mesmo arquivo escolhido duas vezes nao entra em duplicidade
+                const repetido = arquivos.some(f => f.name === arquivo.name && f.size === arquivo.size);
+                if (repetido) return;
+                if (totalAnexos() + arquivo.size > LIMITE_ANEXOS) {
+                    recusados.push(arquivo.name);
+                    return;
+                }
+                arquivos.push(arquivo);
+            });
+            renderizarAnexos();
+            // O aviso aparece aqui, na propria area de anexo: a pessoa esta no fim
+            // do formulario e mandar o foco para o banner do topo desorienta.
+            if (recusados.length) {
+                anexoAviso.textContent = 'Limite de 3 MB no total. Não foi possível anexar: ' +
+                    recusados.join(', ');
+                anexoAviso.style.display = 'block';
+            } else {
+                anexoAviso.style.display = 'none';
+            }
+        }
+
+        anexoBotao.addEventListener('click', () => anexoInput.click());
+        anexoInput.addEventListener('change', () => {
+            adicionarArquivos(anexoInput.files);
+            anexoInput.value = ''; // permite reescolher o mesmo arquivo depois de remover
+        });
+
+        ['dragenter', 'dragover'].forEach(evento => {
+            anexoArea.addEventListener(evento, (e) => {
+                e.preventDefault();
+                anexoArea.classList.add('arrastando');
+            });
+        });
+        ['dragleave', 'drop'].forEach(evento => {
+            anexoArea.addEventListener(evento, (e) => {
+                e.preventDefault();
+                anexoArea.classList.remove('arrastando');
+            });
+        });
+        anexoArea.addEventListener('drop', (e) => {
+            if (e.dataTransfer && e.dataTransfer.files.length) {
+                adicionarArquivos(e.dataTransfer.files);
+            }
+        });
+
+        function lerComoBase64(arquivo) {
+            return new Promise((resolve, reject) => {
+                const leitor = new FileReader();
+                leitor.onload = () => {
+                    // data:...;base64,XXXX -> so a parte depois da virgula
+                    const resultado = String(leitor.result);
+                    resolve({
+                        nome: arquivo.name,
+                        tipo: arquivo.type || 'application/octet-stream',
+                        conteudo: resultado.slice(resultado.indexOf(',') + 1)
+                    });
+                };
+                leitor.onerror = () => reject(new Error('Falha ao ler ' + arquivo.name));
+                leitor.readAsDataURL(arquivo);
+            });
+        }
+
+        function limparAnexos() {
+            arquivos = [];
+            anexoInput.value = '';
+            anexoAviso.style.display = 'none';
+            renderizarAnexos();
+        }
+
         // Salvar no localStorage
         const form = document.getElementById('formAnalise');
         const campos = form.querySelectorAll('input, select, textarea');
@@ -800,6 +1046,8 @@
         function fecharModal() {
             modal.classList.remove('ativo');
             form.reset();
+            // form.reset() nao mexe no array de anexos: a lista ficaria na tela apos o envio
+            limparAnexos();
         }
 
         modalOk.addEventListener('click', fecharModal);
@@ -843,6 +1091,14 @@
                 return;
             }
 
+            // Validar email do responsavel: o type="email" do HTML aceita "a@b",
+            // sem dominio valido, e o email e o caminho de retorno do contato
+            dados.emailResponsavel = (dados.emailResponsavel || '').trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(dados.emailResponsavel)) {
+                mostrarErro('❌ Informe um email válido para o responsável pela indicação!');
+                return;
+            }
+
             // Validar razao social (required do HTML aceita so espacos em branco)
             dados.razaoSocial = (dados.razaoSocial || '').trim();
             if (dados.razaoSocial.length < 3) {
@@ -856,6 +1112,13 @@
                 return;
             }
 
+            // Validar tamanho dos anexos (a Vercel recusa requisicoes grandes com 413)
+            if (totalAnexos() > LIMITE_ANEXOS) {
+                mostrarErro('❌ Os anexos somam ' + formatarTamanho(totalAnexos()) +
+                    '. Remova arquivos para ficar abaixo de 3 MB.');
+                return;
+            }
+
             // Estado de envio no proprio botao: fica visivel onde a pessoa esta e bloqueia clique duplo
             const textoBotao = btnEnviarTexto.textContent;
             btnEnviar.disabled = true;
@@ -864,7 +1127,13 @@
             document.getElementById('errorMsg').style.display = 'none';
 
             try {
+                if (arquivos.length) {
+                    btnEnviarTexto.textContent = 'Anexando...';
+                    dados.anexos = await Promise.all(arquivos.map(lerComoBase64));
+                }
+
                 // Enviar para o backend
+                btnEnviarTexto.textContent = 'Enviando...';
                 const response = await fetch('/api/enviar-preanalise', {
                     method: 'POST',
                     headers: {
@@ -877,7 +1146,11 @@
 
                 if (response.ok && result.success) {
                     // Salvar no localStorage
-                    localStorage.setItem('ultimaSubmissao', JSON.stringify(dados));
+                    // sem os anexos: base64 estoura a cota do localStorage
+                    const dadosSemAnexos = Object.assign({}, dados);
+                    delete dadosSemAnexos.anexos;
+                    dadosSemAnexos.anexosEnviados = arquivos.map(f => f.name).join(', ');
+                    localStorage.setItem('ultimaSubmissao', JSON.stringify(dadosSemAnexos));
                     localStorage.setItem('dataSubmissao', new Date().toLocaleString('pt-BR'));
 
                     // Limpar rascunho salvo para não reaparecer no próximo acesso

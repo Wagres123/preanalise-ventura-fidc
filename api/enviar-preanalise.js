@@ -17,7 +17,14 @@ module.exports = async function handler(req, res) {
         if (!dados.cnpj || !dados.origem || !dados.faturamento) {
             return res.status(400).json({
                 success: false,
-                message: 'Dados obrigatórios faltando (CNPJ, Origem, Faturamento).'
+                message: 'Dados obrigatórios faltando (CNPJ, Responsável, Faturamento).'
+            });
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(dados.emailResponsavel || '').trim())) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email do responsável pela indicação inválido ou ausente.'
             });
         }
 
@@ -29,7 +36,8 @@ module.exports = async function handler(req, res) {
         conteudo += 'Data da Submissão: ' + new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) + '\n\n';
 
         conteudo += 'INFORMAÇÕES BÁSICAS\n' + sub + '\n';
-        conteudo += 'Origem da Indicação: ' + (dados.origem || 'N/A') + '\n';
+        conteudo += 'Responsável pela Indicação: ' + (dados.origem || 'N/A') + '\n';
+        conteudo += 'Email do Responsável: ' + (dados.emailResponsavel || 'N/A') + '\n';
         conteudo += 'Tempo de Relacionamento: ' + (dados.relacionamento || 'N/A') + ' meses\n';
         conteudo += 'CNPJ: ' + (dados.cnpj || 'N/A') + '\n';
         conteudo += 'Razão Social: ' + (dados.razaoSocial || 'N/A') + '\n\n';
@@ -47,6 +55,48 @@ module.exports = async function handler(req, res) {
 
         conteudo += 'INFORMAÇÕES COMPLEMENTARES\n' + sub + '\n';
         conteudo += 'Observações: ' + (dados.observacoes || 'N/A') + '\n\n';
+
+        // Anexos: chegam como base64 no proprio JSON e viram attachments do email.
+        // Limite de 3 MB no total (a Vercel recusa requisicoes acima de ~4.5 MB).
+        const LIMITE_ANEXOS = 3 * 1024 * 1024;
+        const EXTENSOES_OK = ['pdf', 'jpg', 'jpeg', 'png', 'xlsx', 'xls', 'docx', 'doc'];
+        const anexos = [];
+        let totalAnexos = 0;
+
+        if (Array.isArray(dados.anexos)) {
+            for (const item of dados.anexos) {
+                if (!item || typeof item.conteudo !== 'string' || !item.nome) continue;
+
+                // nome de arquivo vindo do cliente nao pode virar caminho
+                const nome = String(item.nome).replace(/[\\/\r\n\0]/g, '_').slice(0, 120);
+                const extensao = (nome.split('.').pop() || '').toLowerCase();
+                if (EXTENSOES_OK.indexOf(extensao) === -1) continue;
+
+                const buffer = Buffer.from(item.conteudo, 'base64');
+                if (!buffer.length) continue;
+
+                totalAnexos += buffer.length;
+                if (totalAnexos > LIMITE_ANEXOS) {
+                    return res.status(413).json({
+                        success: false,
+                        message: 'Os anexos excedem o limite de 3 MB no total.'
+                    });
+                }
+
+                anexos.push({ filename: nome, content: buffer });
+            }
+        }
+
+        conteudo += 'DOCUMENTOS ANEXADOS\n' + sub + '\n';
+        if (anexos.length) {
+            anexos.forEach((a, i) => {
+                conteudo += (i + 1) + '. ' + a.filename +
+                    ' (' + (a.content.length / 1024).toFixed(0) + ' KB)\n';
+            });
+        } else {
+            conteudo += 'Nenhum documento anexado.\n';
+        }
+        conteudo += '\n';
 
         conteudo += linha + '\n';
         conteudo += 'Formulário enviado via Pré-Análise Comercial Ventura FIDC\n';
@@ -74,7 +124,8 @@ module.exports = async function handler(req, res) {
             replyTo: process.env.SMTP_USER,
             subject: 'Pré-Análise Comercial - ' + (dados.razaoSocial ? dados.razaoSocial + ' (' + dados.cnpj + ')' : dados.cnpj),
             text: conteudo,
-            html: '<pre style="font-family:monospace;font-size:13px">' + escapeHtml(conteudo) + '</pre>'
+            html: '<pre style="font-family:monospace;font-size:13px">' + escapeHtml(conteudo) + '</pre>',
+            attachments: anexos
         });
 
         return res.status(200).json({
